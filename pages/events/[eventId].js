@@ -5,18 +5,7 @@ import EventSummary from '../../components/event-detail/event-summary';
 import EventLogistics from '../../components/event-detail/event-logistics';
 import EventContent from '../../components/event-detail/event-content';
 
-// UI Components import
-import ErrorAlert from '../../components/ui/error-alert';
-
 const EventDetailPage = ({ event }) => {
-  if (!event) {
-    return (
-      <div className='center'>
-        <p>Loading...</p>
-      </div>
-    );
-  }
-
   return (
     <>
       <EventSummary title={event.title} />
@@ -35,6 +24,13 @@ const EventDetailPage = ({ event }) => {
 
 export async function getStaticProps(context) {
   const event = await getEventById(context.params.eventId);
+
+  if (!event) {
+    return {
+      notFound: true,
+    };
+  }
+  
   return {
     props: {
       event: event,
@@ -49,7 +45,7 @@ export async function getStaticPaths() {
 
   return {
     paths: paths,
-    fallback: true,
+    fallback: 'blocking',
   };
 }
 
