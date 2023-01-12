@@ -4,6 +4,11 @@ import { useRouter } from 'next/router';
 
 // Components imports
 import EventList from '../../components/events/event-list';
+import ResultsTitle from '../../components/events/results-title';
+
+// UI Components imports
+import Button from '../../components/ui/button';
+import ErrorAlert from '../../components/ui/error-alert';
 
 const FilteredEventsPage = () => {
   const router = useRouter();
@@ -17,6 +22,8 @@ const FilteredEventsPage = () => {
   const year = +router.query.slug[0];
   const month = +router.query.slug[1];
 
+  const date = new Date(year, month - 1);
+
   // handling invalid query params
   if (
     isNaN(year) ||
@@ -26,7 +33,16 @@ const FilteredEventsPage = () => {
     month < 1 ||
     month > 12
   ) {
-    return <p>Invalid date. Please adjust your values!</p>;
+    return (
+      <>
+        <ErrorAlert>
+          <p>Invalid date. Please adjust your values!</p>
+        </ErrorAlert>
+        <div className='center'>
+          <Button link='/events'>Show All Events</Button>
+        </div>
+      </>
+    );
   }
 
   const filteredEvents = getFilteredEvents({
@@ -36,14 +52,24 @@ const FilteredEventsPage = () => {
 
   // Handling not found events
   if (!filteredEvents || filteredEvents.length === 0) {
-    return <p>No events found. Try a different date!</p>
+    return (
+      <>
+        <ErrorAlert>
+          <p>No events found. Try a different date!</p>
+        </ErrorAlert>
+        <div className='center'>
+          <Button link='/events'>Show All Events</Button>
+        </div>
+      </>
+    );
   }
 
   // Happy path
   return (
-    <div>
+    <>
+      <ResultsTitle date={date} />
       <EventList items={filteredEvents} />
-    </div>
+    </>
   );
 };
 

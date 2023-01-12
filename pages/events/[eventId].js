@@ -1,15 +1,25 @@
+// Util imports
 import { useRouter } from 'next/router';
+import { getEventById } from '../../dummy-data';
+
+// Components imports
 import EventSummary from '../../components/event-detail/event-summary';
 import EventLogistics from '../../components/event-detail/event-logistics';
 import EventContent from '../../components/event-detail/event-content';
-import { getEventById } from '../../dummy-data';
+
+// UI Components import
+import ErrorAlert from '../../components/ui/error-alert';
 
 const EventDetailPage = () => {
   const router = useRouter();
   const event = getEventById(router.query.eventId);
 
   if (!event) {
-    return <p>No event found!</p>;
+    return (
+      <ErrorAlert>
+        <p>No event found!</p>
+      </ErrorAlert>
+    );
   }
 
   return (
