@@ -1,6 +1,4 @@
-// Util imports
-import { useRouter } from 'next/router';
-import { getEventById } from '../../dummy-data';
+import { getEventById } from '../../utils/data-fetching';
 
 // Components imports
 import EventSummary from '../../components/event-detail/event-summary';
@@ -10,10 +8,7 @@ import EventContent from '../../components/event-detail/event-content';
 // UI Components import
 import ErrorAlert from '../../components/ui/error-alert';
 
-const EventDetailPage = () => {
-  const router = useRouter();
-  const event = getEventById(router.query.eventId);
-
+const EventDetailPage = ({ event }) => {
   if (!event) {
     return (
       <ErrorAlert>
@@ -37,5 +32,25 @@ const EventDetailPage = () => {
     </>
   );
 };
+
+export async function getStaticProps(context) {
+  const event = await getEventById(context.params.eventId);
+  return {
+    props: {
+      event: event,
+    },
+  };
+}
+
+export async function getStaticPaths() {
+  return {
+    paths: [
+      { params: { eventId: 'e1' } },
+      { params: { eventId: 'e2' } },
+      { params: { eventId: 'e3' } },
+    ],
+    fallback: false,
+  };
+}
 
 export default EventDetailPage;
