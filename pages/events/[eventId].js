@@ -1,4 +1,4 @@
-import { getEventById } from '../../utils/data-fetching';
+import { getEventById, getFeaturedEvents } from '../../utils/data-fetching';
 
 // Components imports
 import EventSummary from '../../components/event-detail/event-summary';
@@ -11,9 +11,9 @@ import ErrorAlert from '../../components/ui/error-alert';
 const EventDetailPage = ({ event }) => {
   if (!event) {
     return (
-      <ErrorAlert>
-        <p>No event found!</p>
-      </ErrorAlert>
+      <div className='center'>
+        <p>Loading...</p>
+      </div>
     );
   }
 
@@ -39,17 +39,17 @@ export async function getStaticProps(context) {
     props: {
       event: event,
     },
+    revalidate: 60,
   };
 }
 
 export async function getStaticPaths() {
+  const events = await getFeaturedEvents();
+  const paths = events.map((event) => ({ params: { eventId: event.id } }));
+
   return {
-    paths: [
-      { params: { eventId: 'e1' } },
-      { params: { eventId: 'e2' } },
-      { params: { eventId: 'e3' } },
-    ],
-    fallback: false,
+    paths: paths,
+    fallback: true,
   };
 }
 
