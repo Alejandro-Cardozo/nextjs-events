@@ -1,4 +1,5 @@
-// Utils imports
+// Next imports
+import Head from 'next/head';
 import { useRouter } from 'next/router';
 
 // Data imports
@@ -18,6 +19,10 @@ const AllEventsPage = ({ events }) => {
 
   return (
     <>
+      <Head>
+        <title>All Events</title>
+        <meta name='description' content='See all the events that will take place near to you' />
+      </Head>
       <EventsSearch onSearch={findEventsHandler} />
       <EventList items={events} />
     </>

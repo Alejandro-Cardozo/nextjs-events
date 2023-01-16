@@ -1,3 +1,6 @@
+// Next imports
+import Head from 'next/head';
+
 // Data imports
 import { getFeaturedEvents } from '../utils/data-fetching';
 
@@ -6,9 +9,13 @@ import EventList from '../components/events/event-list';
 
 const HomePage = (props) => {
   return (
-    <div>
+    <>
+      <Head>
+        <title>NextJS Events</title>
+        <meta name='description' content='Find the most exciting events that will take place in your city' />
+      </Head>
       <EventList items={props.events} />
-    </div>
+    </>
   );
 };
 

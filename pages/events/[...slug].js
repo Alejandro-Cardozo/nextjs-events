@@ -1,7 +1,10 @@
+// Next imports
+import Head from 'next/head';
+import { useRouter } from 'next/router';
+
 // Utils imports
 import { useEffect, useState } from 'react';
 //import { getFilteredEvents } from '../../utils/data-fetching';
-import { useRouter } from 'next/router';
 import useSWR from 'swr';
 
 // Components imports
@@ -89,10 +92,18 @@ const FilteredEventsPage = () => {
   }
 
   const date = new Date(year, month - 1);
+  const humanReadableDate = new Date(date).toLocaleDateString('en-US', {
+    month: 'long',
+    year: 'numeric',
+  });
 
   // Happy path
   return (
     <>
+    <Head>
+      <title>Events in {humanReadableDate}</title>
+      <meta name='description' content={`All events for ${humanReadableDate}`} />
+    </Head>
       <ResultsTitle date={date} />
       <EventList items={filteredEvents} />
     </>
