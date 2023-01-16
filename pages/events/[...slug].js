@@ -23,7 +23,7 @@ const FilteredEventsPage = () => {
 
   const { data, error } = useSWR(
     `${process.env.NEXT_PUBLIC_API_URL}/events.json`,
-    (url) => fetch(url).then(res => res.json())
+    (url) => fetch(url).then((res) => res.json())
   );
 
   useEffect(() => {
@@ -40,9 +40,21 @@ const FilteredEventsPage = () => {
     }
   }, [data]);
 
+  let pageHeadData = (
+    <Head>
+      <title>Filtered Events</title>
+      <meta name='description' content='A list of filtered events.' />
+    </Head>
+  );
+
   // if there is not events
   if (!loadedEvents || !filterData) {
-    return <p className='center'>Loading...</p>;
+    return (
+      <>
+        {pageHeadData}
+        <p className='center'>Loading...</p>
+      </>
+    );
   }
 
   // extract query params
@@ -60,29 +72,9 @@ const FilteredEventsPage = () => {
   ) {
     return (
       <>
+        {pageHeadData}
         <ErrorAlert>
           <p>Invalid date. Please adjust your values!</p>
-        </ErrorAlert>
-        <div className='center'>
-          <Button link='/events'>Show All Events</Button>
-        </div>
-      </>
-    );
-  }
-
-  let filteredEvents = loadedEvents.filter((event) => {
-    const eventDate = new Date(event.date);
-    return (
-      eventDate.getFullYear() === year && eventDate.getMonth() === month - 1
-    );
-  });
-
-  // Handling not found events
-  if (!filteredEvents || filteredEvents.length === 0) {
-    return (
-      <>
-        <ErrorAlert>
-          <p>No events found. Try a different date!</p>
         </ErrorAlert>
         <div className='center'>
           <Button link='/events'>Show All Events</Button>
@@ -97,13 +89,43 @@ const FilteredEventsPage = () => {
     year: 'numeric',
   });
 
+  // update the head data if the params are valid
+  pageHeadData = (
+    <Head>
+      <title>Events in {humanReadableDate}</title>
+      <meta
+        name='description'
+        content={`All events for ${humanReadableDate}`}
+      />
+    </Head>
+  );
+
+  let filteredEvents = loadedEvents.filter((event) => {
+    const eventDate = new Date(event.date);
+    return (
+      eventDate.getFullYear() === year && eventDate.getMonth() === month - 1
+    );
+  });
+
+  // Handling not found events
+  if (!filteredEvents || filteredEvents.length === 0) {
+    return (
+      <>
+        {pageHeadData}
+        <ErrorAlert>
+          <p>No events found. Try a different date!</p>
+        </ErrorAlert>
+        <div className='center'>
+          <Button link='/events'>Show All Events</Button>
+        </div>
+      </>
+    );
+  }
+
   // Happy path
   return (
     <>
-    <Head>
-      <title>Events in {humanReadableDate}</title>
-      <meta name='description' content={`All events for ${humanReadableDate}`} />
-    </Head>
+      {pageHeadData}
       <ResultsTitle date={date} />
       <EventList items={filteredEvents} />
     </>
