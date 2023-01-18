@@ -1,8 +1,7 @@
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import classes from './newsletter-registration.module.css';
 
 function NewsletterRegistration() {
-  const [email, setEmail] = useState('');
 
   const emailRef = useRef();
 

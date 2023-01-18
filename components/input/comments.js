@@ -14,7 +14,21 @@ function Comments(props) {
   }
 
   function addCommentHandler(commentData) {
-    // send data to API
+    const bodyObj = {
+      name: commentData.name,
+      email: commentData.email,
+      comment: commentData.text,
+    };
+    fetch('/api/events/' + eventId, {
+      method: 'POST',
+      body: JSON.stringify(bodyObj),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => console.log(data))
+      .catch((e) => console.log(e));
   }
 
   return (

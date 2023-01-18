@@ -8,6 +8,8 @@ function handler(req, res) {
     } catch (error) {
       console.log(error)
     }
+  } else {
+    res.redirect('/');
   }
 }
 
