@@ -8,6 +8,7 @@ import { getAllEvents } from '../../utils/data-fetching';
 // Components imports
 import EventList from '../../components/events/event-list';
 import EventsSearch from '../../components/events/events-search';
+import NewsletterRegistration from '../../components/input/newsletter-registration';
 
 const AllEventsPage = ({ events }) => {
 
@@ -23,6 +24,7 @@ const AllEventsPage = ({ events }) => {
         <title>All Events</title>
         <meta name='description' content='See all the events that will take place near to you' />
       </Head>
+      <NewsletterRegistration />
       <EventsSearch onSearch={findEventsHandler} />
       <EventList items={events} />
     </>
