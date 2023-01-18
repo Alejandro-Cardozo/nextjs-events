@@ -14,14 +14,9 @@ function Comments(props) {
   }
 
   function addCommentHandler(commentData) {
-    const bodyObj = {
-      name: commentData.name,
-      email: commentData.email,
-      comment: commentData.text,
-    };
     fetch('/api/comments/' + eventId, {
       method: 'POST',
-      body: JSON.stringify(bodyObj),
+      body: JSON.stringify(commentData),
       headers: {
         'Content-Type': 'application/json',
       },
