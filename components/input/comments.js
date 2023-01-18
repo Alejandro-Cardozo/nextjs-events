@@ -19,7 +19,7 @@ function Comments(props) {
       email: commentData.email,
       comment: commentData.text,
     };
-    fetch('/api/events/' + eventId, {
+    fetch('/api/comments/' + eventId, {
       method: 'POST',
       body: JSON.stringify(bodyObj),
       headers: {

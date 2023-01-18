@@ -7,7 +7,7 @@ function NewsletterRegistration() {
 
   function registrationHandler(event) {
     event.preventDefault();
-    fetch('/api/events', {
+    fetch('/api/newsletter', {
       method: 'POST',
       body: JSON.stringify({ email: emailRef.current.value }),
       headers: {
@@ -17,9 +17,6 @@ function NewsletterRegistration() {
       .then((response) => response.json())
       .then((data) => console.log(data))
       .catch((e) => console.log(e));
-    // fetch user input (state or refs)
-    // optional: validate input
-    // send valid data to API
   }
 
   return (
