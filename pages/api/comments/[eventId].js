@@ -1,4 +1,6 @@
-function handler(req, res) {
+import { MongoClient } from 'mongodb';
+
+async function handler(req, res) {
   const eventId = req.query.eventId;
   if (req.method === 'POST') {
     const { email, name, text } = req.body;
@@ -13,28 +15,40 @@ function handler(req, res) {
       res.status(422).json({ message: 'Invalid input' });
       return;
     }
+
+    const client = await MongoClient.connect(process.env.MONGO_URI);
+    const db = client.db();
+
     try {
-      console.log(`Thanks for commenting on this event, ${name}`);
-      const date = new Date().toISOString();
       const newComment = {
-        id: date,
         email,
         name,
         text,
+        eventId,
       };
+      const result = await db.collection('comments').insertOne(newComment);
+      newComment.id = result.insertedId;
       res.status(201).json({ message: 'Comment added', comment: newComment });
     } catch (error) {
       console.log(error);
+    } finally {
+      client.close();
     }
   } else if (req.method === 'GET') {
+    const client = await MongoClient.connect(process.env.MONGO_URI);
+    const db = client.db();
     try {
-      const dummyList = [
-        { id: 're1', name: 'Leon', text: "I can't wait for it to start!!" },
-        { id: 're2', name: 'Ada', text: 'Looking forward to the day!' },
-        { id: 're3', name: 'Albert', text: 'Bring chips plz' },
-      ];
-      res.status(200).json({ comments: dummyList });
-    } catch (error) {}
+      const documents = await db
+        .collection('comments')
+        .find()
+        .sort({ _id: -1 })
+        .toArray();
+      res.status(200).json({ comments: documents });
+    } catch (error) {
+      console.log(error);
+    } finally {
+      client.close();
+    }
   } else {
     res.redirect('/');
   }

@@ -11,7 +11,7 @@ async function handler(req, res) {
     try {
       const client = await MongoClient.connect(process.env.MONGO_URI);
       const db = client.db();
-      await db.collection('emails').insertOne({ email: email });
+      await db.collection('newsletter').insertOne({ email: email });
       client.close();
 
       const success = `${email} has been successfully subscribed to our newsletter`;
