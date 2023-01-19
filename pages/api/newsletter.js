@@ -1,4 +1,4 @@
-import { MongoClient } from 'mongodb';
+import { connect, insertOne } from '../../utils/db-utils';
 
 async function handler(req, res) {
   if (req.method === 'POST') {
@@ -8,17 +8,25 @@ async function handler(req, res) {
       return;
     }
 
-    try {
-      const client = await MongoClient.connect(process.env.MONGO_URI);
-      const db = client.db();
-      await db.collection('newsletter').insertOne({ email: email });
-      client.close();
+    let client;
 
-      const success = `${email} has been successfully subscribed to our newsletter`;
-      res.status(201).json({ message: success });
+    try {
+      client = await connect();
     } catch (error) {
-      console.log(error);
+      res.status(500).json({ message: 'Unable to connect to database' });
+      return;
     }
+
+    try {
+      await insertOne(client, 'newsletter', { email: email });
+      res.status(201).json({ message: 'User registered' });
+    } catch (error) {
+      res.status(500).json({
+        message: 'Unexpected error while inserting the data',
+        error: error,
+      });
+    }
+    client.close();
   } else {
     res.redirect('/');
   }

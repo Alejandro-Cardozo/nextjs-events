@@ -1,4 +1,4 @@
-import { MongoClient } from 'mongodb';
+import { connect, insertOne, getAll } from '../../../utils/db-utils';
 
 async function handler(req, res) {
   const eventId = req.query.eventId;
@@ -16,8 +16,13 @@ async function handler(req, res) {
       return;
     }
 
-    const client = await MongoClient.connect(process.env.MONGO_URI);
-    const db = client.db();
+    let client;
+    try {
+      client = await connect();
+    } catch (error) {
+      res.status(500).json({ message: 'Unable to connect to database' });
+      return;
+    }
 
     try {
       const newComment = {
@@ -26,29 +31,41 @@ async function handler(req, res) {
         text,
         eventId,
       };
-      const result = await db.collection('comments').insertOne(newComment);
-      newComment.id = result.insertedId;
+      await insertOne(client, 'comments', newComment);
       res.status(201).json({ message: 'Comment added', comment: newComment });
     } catch (error) {
-      console.log(error);
-    } finally {
-      client.close();
+      res.status(500).json({
+        message: 'Unexpected error while inserting the data',
+        error: error,
+      });
     }
+    client.close();
   } else if (req.method === 'GET') {
-    const client = await MongoClient.connect(process.env.MONGO_URI);
-    const db = client.db();
+    let client;
     try {
-      const documents = await db
-        .collection('comments')
-        .find()
-        .sort({ _id: -1 })
-        .toArray();
+      client = await connect();
+    } catch (error) {
+      res.status(500).json({
+        message: 'Unable to connect to database',
+        error: error,
+      });
+      return;
+    }
+    try {
+      const documents = await getAll(
+        client,
+        'comments',
+        { eventId: eventId },
+        { _id: -1 }
+      );
       res.status(200).json({ comments: documents });
     } catch (error) {
-      console.log(error);
-    } finally {
-      client.close();
+      res.status(500).json({
+        message: 'Unexpected error while getting the data',
+        error: error,
+      });
     }
+    client.close();
   } else {
     res.redirect('/');
   }
